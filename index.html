@@ -24,7 +24,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script>
-    const socket = io();
+    //const socket = io();
 
     //With react this would be just setState onChange and onSubmit.  
     $(function () {
@@ -39,27 +39,30 @@
         $('#m').val('');
         return false;
         });
+
+        socket.on('user created', function(id){
+            console.log(id, 'user create')
+            document.body.innerHTML += `<div style=background:${"#"+((1<<24)*Math.random()|0).toString(16)} class="me" id=${id}>${id}@@</div>`
+        })
+
+
+        socket.on('chat message to client', function(msg){
+            $('#messages').append($('<li>').text(msg));
+        });
+
+
+
+
+        socket.on("mouse has moved", (movementFromServer) => {
+            $(`#${movementFromServer.id}`).css(movementFromServer.movement)
+        })
+
+        document.onmousemove = function(e){
+            let movement= {top:e.clientY,left:e.clientX}
+            socket.emit("mouse move", movement)
+        }
+
     });
-    socket.on('chat message to client', function(msg){
-      console.log(msg)
-      $('#messages').append($('<li>').text(msg));
-    });
-
-    socket.on('user created', (id)=>{
-        console.log(id, 'user create')
-        document.body.innerHTML += `<div class="me" id=${id}>${id}</div>`
-    })
-
-
-    socket.on("mouse has moved", (movementFromServer) => {
-        console.log(movementFromServer)
-        $(`#${movementFromServer.id}`).css(movementFromServer.movement)
-    })
-
-    document.onmousemove = function(e){
-        let movement= {top:e.clientY,left:e.clientX}
-        socket.emit("mouse move", movement)
-    }
 
     </script>
 
