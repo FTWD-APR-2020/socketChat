@@ -11,6 +11,7 @@
       #messages { list-style-type: none; margin: 0; padding: 0; }
       #messages li { padding: 5px 10px; }
       #messages li:nth-child(odd) { background: #eee; }
+      .me { background: blue; position: absolute; padding: 10px; border-radius:100%}
     </style>
   </head>
   <body>
@@ -39,12 +40,27 @@
         return false;
         });
     });
-
-
     socket.on('chat message to client', function(msg){
       console.log(msg)
       $('#messages').append($('<li>').text(msg));
     });
+
+    socket.on('user created', (id)=>{
+        console.log(id, 'user create')
+        document.body.innerHTML += `<div class="me" id=${id}>${id}</div>`
+    })
+
+
+    socket.on("mouse has moved", (movementFromServer) => {
+        console.log(movementFromServer)
+        $(`#${movementFromServer.id}`).css(movementFromServer.movement)
+    })
+
+    document.onmousemove = function(e){
+        let movement= {top:e.clientY,left:e.clientX}
+        socket.emit("mouse move", movement)
+    }
+
     </script>
 
 </html>

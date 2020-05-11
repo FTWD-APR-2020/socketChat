@@ -9,13 +9,19 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
   console.log('a user connected', socket.id);
-  
+  socket.emit('user created', socket.id)
 
 
   socket.on('chat message to server', (msg) => {
     console.log('message: ' + msg);
     io.emit('chat message to client', msg);
   });
+
+  socket.on('mouse move', (movement) => {
+      io.emit('mouse has moved', { movement, id:socket.id});
+  })
+
+
 
 
   socket.on('disconnect', () => {
